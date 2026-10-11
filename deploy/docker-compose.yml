@@ -1,10 +1,12 @@
 # arquitetura.arcanestudios.io (site de demonstração). Projeto Docker "arquitetura" na VPS.
-# A cada subida: o serviço "carga" baixa o site do repositório PÚBLICO (sem token) para o volume; o "web" (nginx) serve.
+# A cada subida: o serviço "carga" baixa o site deste repositório (funciona privado ou público: usa o GH_TOKEN do projeto auto-deploy, lido só para leitura) para o volume; o "web" (nginx) serve.
 services:
   carga:
     image: alpine:3.20
     restart: "no"
-    volumes: [site:/site]
+    volumes:
+      - site:/site
+      - /docker/auto-deploy/.env:/auto-deploy.env:ro
     entrypoint:
       - sh
       - -c
@@ -12,7 +14,9 @@ services:
         set -eu
         apk add --no-cache curl >/dev/null
         rm -rf /tmp/src && mkdir /tmp/src
-        curl -fsSL https://codeload.github.com/ArcaneStudioss/arquitetura/tar.gz/refs/heads/main | tar xz --strip-components=1 -C /tmp/src
+        GH=$$(grep -E '^GH_TOKEN=' /auto-deploy.env 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"' || true)
+        U=https://codeload.github.com/ArcaneStudioss/arquitetura/tar.gz/refs/heads/main
+        if [ -n "$$GH" ]; then curl -fsSL -H "Authorization: Bearer $$GH" "$$U"; else curl -fsSL "$$U"; fi | tar xz --strip-components=1 -C /tmp/src
         [ -f /tmp/src/index.html ] || { echo pacote-invalido; exit 1; }
         rm -rf /site/* /site/.[!.]* 2>/dev/null || true
         cd /tmp/src && cp -a index.html favicon.svg robots.txt css js fonts img /site/
