@@ -1,0 +1,108 @@
+/* ==========================================================================
+   Arcane Motion · animações que dão cara de site caro, sem quebrar nada
+   Princípios (skill codemakers-design):
+   - o conteúdo é VISÍVEL por padrão; só escondemos quando o JS confirma que vai animar (html.motion)
+   - movimento reduzido (prefers-reduced-motion) = tudo aparece direto, sem deslocamento
+   - animar só transform e opacity; nada de sequestrar a rolagem
+   ========================================================================== */
+
+:root{--dur:.8s}
+
+/* ---- Barra de progresso de leitura ---- */
+.progresso-scroll{position:fixed;inset:0 0 auto 0;height:3px;z-index:60;background:var(--destaque);transform-origin:0 50%;transform:scaleX(var(--scroll,0));pointer-events:none}
+
+/* ---- Cabeçalho que some ao descer e volta ao subir ---- */
+.topo{transition:transform .38s var(--ease-out),box-shadow .2s}
+.topo--oculto{transform:translateY(-105%)}
+.topo--sombra{box-shadow:0 1px 0 color-mix(in srgb,var(--tinta) 10%,transparent)}
+
+/* ---- Entrada ao rolar: [data-reveal] (e variações) ---- */
+html.motion [data-reveal]{
+  opacity:0;transform:translate3d(0,28px,0);
+  transition:opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out);
+  transition-delay:calc(var(--i,0) * 80ms)
+}
+html.motion [data-reveal=esq]{transform:translate3d(-36px,0,0)}
+html.motion [data-reveal=dir]{transform:translate3d(36px,0,0)}
+html.motion [data-reveal=zoom]{transform:scale(.94)}
+html.motion [data-reveal].is-in{opacity:1;transform:none}
+
+/* ---- Título palavra por palavra: [data-split] ---- */
+.palavra{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.14em;margin-bottom:-.14em}
+.palavra>span{display:inline-block}
+html.motion [data-split] .palavra>span{
+  transform:translate3d(0,110%,0);
+  transition:transform .9s var(--ease-out);transition-delay:calc(var(--i,0) * 70ms + 120ms)
+}
+html.motion [data-split].is-in .palavra>span{transform:none}
+
+/* ---- Cards: sobem e inclinam levemente com o mouse ---- */
+@media (hover:hover) and (pointer:fine){
+  .grade li,.card-anim{transition:transform .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+  .grade li:hover,.card-anim:hover{transform:translateY(-6px);box-shadow:0 18px 40px color-mix(in srgb,var(--tinta) 14%,transparent)}
+  [data-tilt]{transform:perspective(900px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg));transition:transform .2s ease-out}
+}
+
+/* ---- Botão: brilho que atravessa + pressão ---- */
+.btn{position:relative;overflow:hidden;transition:transform .15s var(--ease-out),opacity .2s,box-shadow .25s}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%)}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover::after{transform:translateX(120%);transition:transform .7s var(--ease-out)}
+  .btn:hover{box-shadow:0 10px 26px color-mix(in srgb,var(--destaque) 30%,transparent)}
+}
+.btn:active{transform:scale(.97)}
+[data-magnetic]{transition:transform .25s var(--ease-out)}
+
+/* ---- Link com sublinhado que desenha ---- */
+.link-anim{background:linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;transition:background-size .35s var(--ease-out);text-decoration:none}
+.link-anim:hover,.link-anim:focus-visible{background-size:100% 2px}
+
+/* ---- Faixa que rola sozinha (marquee) ---- */
+.marquee{overflow:hidden;border-block:1px solid color-mix(in srgb,var(--tinta) 12%,transparent);padding:18px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marquee__trilho{display:flex;width:max-content;gap:48px;animation:marquee 32s linear infinite}
+.marquee:hover .marquee__trilho{animation-play-state:paused}
+.marquee__trilho span{font-size:1.05rem;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+@keyframes marquee{to{transform:translateX(calc(-50% - 24px))}}
+
+/* ---- Formas flutuantes no fundo (decoração, nunca conteúdo) ---- */
+.hero{position:relative;overflow:clip}
+.hero>*{position:relative;z-index:1}
+.hero-forma{position:absolute;z-index:0;border-radius:50%;filter:blur(60px);background:var(--destaque);opacity:.09;pointer-events:none;will-change:transform}
+.hero-forma--a{width:380px;height:380px;right:-80px;top:-60px;animation:flutuar 14s ease-in-out infinite}
+.hero-forma--b{width:260px;height:260px;left:-60px;bottom:-40px;animation:flutuar 18s ease-in-out infinite reverse}
+@keyframes flutuar{50%{transform:translate3d(30px,24px,0) scale(1.08)}}
+
+/* ---- Faísca da Arcane (assinatura): gira devagar e pulsa ---- */
+.faisca{display:inline-block;width:1em;height:1em;vertical-align:-.1em;animation:faisca 5s ease-in-out infinite}
+@keyframes faisca{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(90deg) scale(1.18)}}
+
+/* ---- FAQ: conteúdo entra suave ao abrir ---- */
+details[open]>.conteudo,details[open]>p{animation:abrir .35s var(--ease-out)}
+@keyframes abrir{from{opacity:0;transform:translateY(-6px)}}
+details>summary{display:flex;justify-content:space-between;gap:16px;align-items:center}
+details>summary::after{content:"+";font-size:1.4rem;line-height:1;transition:transform .3s var(--ease-out)}
+details[open]>summary::after{transform:rotate(45deg)}
+
+/* ---- Pop-up e toast: entrada e saída ---- */
+dialog.ui-dialog[open]{animation:dlg-in .3s var(--ease-out)}
+dialog.ui-dialog[open]::backdrop{animation:fade .3s ease-out}
+dialog.ui-dialog.is-closing{animation:dlg-out .17s ease-in forwards}
+dialog.ui-dialog.is-closing::backdrop{animation:fade-out .17s ease-in forwards}
+@keyframes dlg-in{from{opacity:0;transform:translateY(14px) scale(.96)}}
+@keyframes dlg-out{to{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes fade{from{opacity:0}}
+@keyframes fade-out{to{opacity:0}}
+.ui-toast{animation:toast-in .35s var(--ease-out)}
+.ui-toast.is-out{animation:toast-out .22s ease-in forwards}
+@keyframes toast-in{from{opacity:0;transform:translateY(16px)}}
+@keyframes toast-out{to{opacity:0;transform:translateY(8px)}}
+
+/* ---- Movimento reduzido: tudo aparece direto e para de se mexer ---- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .marquee__trilho,.hero-forma,.faisca{animation:none}
+  .marquee{overflow-x:auto}
+  .progresso-scroll{display:none}
+  .topo,.btn,.grade li,.card-anim,details>summary::after{transition:none}
+  dialog.ui-dialog[open],dialog.ui-dialog[open]::backdrop,.ui-toast{animation:none}
+}

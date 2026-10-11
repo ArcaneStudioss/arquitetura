@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Arcane UI · acabamento dos padrões do navegador
+   Regra da casa: nada de "cara de navegador" no site do cliente.
+   Usa os tokens do styles.css (--tinta, --papel, --destaque, --destaque-texto, --grafite, --raio)
+   ========================================================================== */
+
+:root{
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --ui-borda:color-mix(in srgb,var(--tinta) 22%,transparent);
+  --ui-thumb:color-mix(in srgb,var(--tinta) 38%,transparent);
+}
+
+/* ---- Barra de rolagem (a lateral) ---- */
+html{scroll-padding-top:88px}
+/* barra de rolagem própria (mouse): fica POR CIMA da página e usa mix-blend-mode, então acompanha a cor de cada seção (clara ou escura) */
+@media (pointer:fine){
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  .barra-rolagem{position:fixed;top:0;right:0;width:16px;height:100vh;z-index:70;pointer-events:none;mix-blend-mode:difference;opacity:0;transition:opacity .35s}
+  .barra-rolagem.is-on{opacity:1}
+  .barra-rolagem i{position:absolute;right:3px;width:6px;min-height:40px;border-radius:99px;background:#fff;opacity:.6;pointer-events:auto;cursor:grab;transition:width .15s,opacity .15s}
+  .barra-rolagem.is-on i:hover,.barra-rolagem i.is-arrastando{width:10px;opacity:.85}
+  .barra-rolagem i.is-arrastando{cursor:grabbing}
+}
+@media (pointer:coarse){.barra-rolagem{display:none}}
+
+/* ---- Seleção, toque e cursor de texto ---- */
+::selection{background:var(--destaque);color:var(--destaque-texto)}
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+a,button,summary,label,[role=button]{touch-action:manipulation}   /* sem atraso de toque duplo */
+input,textarea,select{caret-color:var(--destaque)}
+
+/* ---- Campos de formulário ---- */
+input,textarea,select,button{font:inherit;color:inherit}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),textarea,select{
+  -webkit-appearance:none;appearance:none;width:100%;
+  background:var(--papel);border:1.5px solid var(--ui-borda);border-radius:var(--raio);
+  padding:12px 14px;min-height:44px;transition:border-color .18s,box-shadow .18s
+}
+input:hover,textarea:hover,select:hover{border-color:color-mix(in srgb,var(--tinta) 45%,transparent)}
+input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:none;border-color:var(--destaque);box-shadow:0 0 0 4px color-mix(in srgb,var(--destaque) 18%,transparent)
+}
+::placeholder{color:var(--grafite);opacity:.75}
+textarea{resize:vertical;min-height:110px}
+
+/* autopreenchimento do Chrome (aquele fundo amarelo/azul) */
+input:-webkit-autofill,textarea:-webkit-autofill,select:-webkit-autofill{
+  -webkit-box-shadow:0 0 0 1000px var(--papel) inset;-webkit-text-fill-color:var(--tinta);
+  caret-color:var(--tinta);transition:background-color 9999s ease-out
+}
+/* botão "x" de limpar e setinhas de número */
+input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none;display:none}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* select com seta própria */
+select{
+  padding-right:42px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center
+}
+/* marcar / escolher: usa a cor de destaque do site */
+input[type=checkbox],input[type=radio],input[type=range],progress{accent-color:var(--destaque)}
+input[type=checkbox],input[type=radio]{width:20px;height:20px;cursor:pointer}
+/* campo de arquivo */
+input[type=file]{font-size:.95rem}
+input[type=file]::file-selector-button{
+  font:inherit;font-weight:600;margin-right:12px;padding:10px 16px;border:0;border-radius:var(--raio);
+  background:var(--destaque);color:var(--destaque-texto);cursor:pointer
+}
+/* data/hora no tema do site */
+input[type=date],input[type=time],input[type=datetime-local]{color-scheme:light}
+input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.6}
+
+/* ---- details / summary (FAQ) sem a setinha padrão ---- */
+summary{list-style:none;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+
+/* ---- Foco visível (teclado) bonito e consistente ---- */
+:focus-visible{outline:3px solid var(--destaque);outline-offset:3px;border-radius:4px}
+:focus:not(:focus-visible){outline:none}
+
+/* ---- Imagens e links ---- */
+img{-webkit-user-drag:none}
+a{-webkit-touch-callout:none}
+
+/* ---- Pop-up de confirmação (substitui alert/confirm/prompt do navegador) ---- */
+.ui-lock{overflow:hidden;scrollbar-gutter:stable}
+dialog.ui-dialog{
+  border:0;padding:0;border-radius:calc(var(--raio) + 8px);background:var(--papel);color:var(--tinta);
+  width:min(92vw,440px);box-shadow:0 30px 80px rgba(0,0,0,.28);overscroll-behavior:contain
+}
+dialog.ui-dialog::backdrop{background:rgba(10,10,10,.5);backdrop-filter:blur(4px)}
+.ui-dialog__in{padding:28px 26px 22px;display:grid;gap:10px}
+.ui-dialog h2{margin:0;font-size:1.3rem;line-height:1.25}
+.ui-dialog p{margin:0;color:var(--grafite)}
+.ui-dialog__acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.ui-dialog--perigo .btn:not(.btn-sec){background:#B00020;border-color:#B00020;color:#fff}
+
+/* ---- Aviso rápido (toast) ---- */
+.ui-toasts{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:grid;gap:8px;z-index:100;width:min(92vw,420px);pointer-events:none}
+.ui-toast{pointer-events:auto;background:var(--tinta);color:var(--papel);padding:13px 18px;border-radius:var(--raio);font-weight:500;box-shadow:0 12px 36px rgba(0,0,0,.25)}
+.ui-toast--ok{border-left:4px solid #2e9e5b}
+.ui-toast--erro{border-left:4px solid #e5484d}

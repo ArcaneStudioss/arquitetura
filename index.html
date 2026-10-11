@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Entardecer · Arcane Arquitetura</title>
+<meta name="description" content="Passeio pela Casa Entardecer, projeto conceitual da Arcane Studios. Um passeio pela casa, do pôr do sol até a noite.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#12100E">
+<meta property="og:title" content="Casa Entardecer · Arcane Arquitetura">
+<meta property="og:url" content="https://arquitetura.arcanestudios.io/">
+<meta property="og:description" content="Um passeio pela casa, do pôr do sol até a noite.">
+<meta property="og:image" content="img/01-fachada-960.webp">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="img/01-fachada-960.webp" imagesrcset="img/01-fachada-960.webp 960w, img/01-fachada.webp 1536w" imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="css/site.css?v=2">
+<link rel="stylesheet" href="css/arcane-ui.css?v=2">
+<link rel="stylesheet" href="css/arcane-motion.css?v=2">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-arrow-down" viewBox="0 0 256 256"><path d="M204.24,148.24l-72,72a6,6,0,0,1-8.48,0l-72-72a6,6,0,0,1,8.48-8.48L122,201.51V40a6,6,0,0,1,12,0V201.51l61.76-61.75a6,6,0,0,1,8.48,8.48Z"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M220.24,132.24l-72,72a6,6,0,0,1-8.48-8.48L201.51,134H40a6,6,0,0,1,0-12H201.51L139.76,60.24a6,6,0,0,1,8.48-8.48l72,72A6,6,0,0,1,220.24,132.24Z"/></symbol>
+<symbol id="i-arrow-up-right" viewBox="0 0 256 256"><path d="M198,64V168a6,6,0,0,1-12,0V78.48L68.24,196.24a6,6,0,0,1-8.48-8.48L177.52,70H88a6,6,0,0,1,0-12H192A6,6,0,0,1,198,64Z"/></symbol>
+<symbol id="i-caret-left" viewBox="0 0 256 256"><path d="M164.24,203.76a6,6,0,1,1-8.48,8.48l-80-80a6,6,0,0,1,0-8.48l80-80a6,6,0,0,1,8.48,8.48L88.49,128Z"/></symbol>
+<symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M180.24,132.24l-80,80a6,6,0,0,1-8.48-8.48L167.51,128,91.76,52.24a6,6,0,0,1,8.48-8.48l80,80A6,6,0,0,1,180.24,132.24Z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 256 256"><path d="M222,128a6,6,0,0,1-6,6H134v82a6,6,0,0,1-12,0V134H40a6,6,0,0,1,0-12h82V40a6,6,0,0,1,12,0v82h82A6,6,0,0,1,222,128Z"/></symbol>
+<symbol id="i-whatsapp-logo" viewBox="0 0 256 256">Internal Server Error</symbol>
+<symbol id="i-x" viewBox="0 0 256 256"><path d="M204.24,195.76a6,6,0,1,1-8.48,8.48L128,136.49,60.24,204.24a6,6,0,0,1-8.48-8.48L119.51,128,51.76,60.24a6,6,0,0,1,8.48-8.48L128,119.51l67.76-67.75a6,6,0,0,1,8.48,8.48L136.49,128Z"/></symbol></svg>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="topo" id="topo">
+  <a class="marca" href="#casa" aria-label="Arcane Arquitetura, início"><img class="marca__logo" src="img/arcane.svg" alt="" width="152" height="30"><span class="marca__div" aria-hidden="true"></span>arquitetura</a>
+  <nav class="menu" aria-label="Principal">
+    <a href="#casa">A casa</a><a href="#atelie">Ateliê</a><a href="#processo">Processo</a><a href="#contato">Contato</a>
+  </nav>
+  <button class="btn btn--luz topo__cta" type="button" data-abrir-conversa>Agendar conversa</button>
+</header>
+
+<main id="conteudo">
+<section class="tour" id="casa" aria-label="Passeio pela Casa Entardecer">
+  <div class="tour__palco">
+    <img class="tour__poster" src="img/01-fachada-960.webp" srcset="img/01-fachada-960.webp 960w, img/01-fachada.webp 1536w" sizes="100vw" width="1536" height="864" alt="Fachada da Casa Entardecer ao pôr do sol, refletida na piscina" fetchpriority="high">
+    <canvas class="tour__tela" aria-hidden="true"></canvas>
+    <div class="tour__veu" aria-hidden="true"></div>
+
+    <div class="tour__hero">
+      <p class="tour__selo">Projeto conceitual · site de exemplo</p>
+      <h1 class="tour__titulo"><span>Casa</span> <span>Entardecer</span></h1>
+      <p class="tour__sub">Um passeio pela casa, do pôr do sol até a noite.</p>
+      <div class="tour__acoes">
+        <button class="btn btn--luz" type="button" data-entrar>Entrar na casa <svg class="ic"><use href="#i-arrow-down"/></svg></button>
+        <button class="btn btn--vidro" type="button" data-abrir-conversa>Falar com o ateliê</button>
+      </div>
+    </div>
+
+    <ol class="tour__comodos">
+      <li class="comodo" data-i="0"><img src="img/01-fachada-960.webp" alt="" loading="lazy" width="960" height="540"><p class="comodo__n">01 · Fachada</p><h2>Chegar no fim da tarde.</h2><p>A casa se abre para o poente. Os volumes de cal flutuam sobre a pedra e a água devolve a luz.</p></li>
+      <li class="comodo" data-i="1"><img src="img/02-entrada-960.webp" alt="Porta pivotante de madeira aberta, com degraus de pedra iluminados" loading="lazy" width="960" height="540"><p class="comodo__n">02 · Entrada</p><h2>Uma porta que gira inteira.</h2><p>Painel de freijó pivotante e degraus de travertino que convidam a entrar devagar.</p></li>
+      <li class="comodo" data-i="2"><img src="img/03-sala-960.webp" alt="Sala com pé-direito duplo, lareira acesa e janela para o jardim" loading="lazy" width="960" height="540"><p class="comodo__n">03 · Sala</p><h2>O fogo no centro da casa.</h2><p>Pé-direito duplo, lareira em travertino e o jardim inteiro do outro lado do vidro.</p></li>
+      <li class="comodo" data-i="3"><img src="img/04-cozinha-960.webp" alt="Cozinha com ilha de pedra, mesa de madeira e escada solta ao fundo" loading="lazy" width="960" height="540"><p class="comodo__n">04 · Cozinha e jantar</p><h2>A mesa comprida.</h2><p>Ilha em pedra maciça, madeira por todo lado e lugar para a família inteira.</p></li>
+      <li class="comodo" data-i="4"><img src="img/05-quarto-960.webp" alt="Quarto com cama de linho, cabeceira de madeira iluminada e porta aberta para o jardim" loading="lazy" width="960" height="540"><p class="comodo__n">05 · Quarto</p><h2>Luz baixa e linho.</h2><p>Iluminação escondida na cabeceira e a porta aberta para o jardim à noite.</p></li>
+      <li class="comodo" data-i="5"><img src="img/06-terraco-960.webp" alt="Terraço à noite com fogo de chão, sofás e vista para os morros" loading="lazy" width="960" height="540"><p class="comodo__n">06 · Terraço</p><h2>A noite como teto.</h2><p>Fogo de chão, pergolado em madeira e a vista até os morros.</p></li>
+    </ol>
+
+    <div class="tour__pontos" aria-label="Detalhes do ambiente"></div>
+    <div class="tour__cartao" role="dialog" aria-modal="false" aria-labelledby="cartao-t" hidden>
+      <button class="tour__cartao-x" type="button" aria-label="Fechar detalhe"><svg class="ic"><use href="#i-x"/></svg></button>
+      <p class="tour__cartao-t" id="cartao-t"></p><p class="tour__cartao-d"></p>
+    </div>
+
+    <nav class="tour__trilho" aria-label="Cômodos da casa">
+      <button class="tour__seta" type="button" data-ant aria-label="Cômodo anterior"><svg class="ic"><use href="#i-caret-left"/></svg></button>
+      <div class="tour__lista"></div>
+      <button class="tour__seta" type="button" data-prox aria-label="Próximo cômodo"><svg class="ic"><use href="#i-caret-right"/></svg></button>
+    </nav>
+  </div>
+</section>
+
+<section class="atelie" id="atelie">
+  <div class="atelie__texto">
+    <h2 data-split>A gente desenha a partir da luz.</h2>
+    <p data-reveal>Onde bate o sol da manhã, onde a família se encontra à noite, que material envelhece bonito. Cada casa começa por essas perguntas, antes de qualquer planta.</p>
+  </div>
+  <div class="materiais" data-stagger>
+    <figure class="mat mat--a"><img src="img/mat-travertino.webp" alt="Detalhe de travertino" loading="lazy" width="720" height="540"><figcaption><b>Travertino</b>pedra que esquenta com a luz</figcaption></figure>
+    <figure class="mat mat--b"><img src="img/mat-freijo.webp" alt="Detalhe de madeira freijó" loading="lazy" width="720" height="1200"><figcaption><b>Freijó</b>madeira de tom mel</figcaption></figure>
+    <figure class="mat mat--c"><img src="img/mat-linho.webp" alt="Detalhe de manta e lençol de linho" loading="lazy" width="1067" height="720"><figcaption><b>Linho</b>texturas que convidam ao toque</figcaption></figure>
+    <figure class="mat mat--d"><img src="img/mat-fogo.webp" alt="Lareira acesa em travertino" loading="lazy" width="900" height="720"><figcaption><b>Fogo</b>o centro de toda casa</figcaption></figure>
+  </div>
+</section>
+
+<section class="processo" id="processo">
+  <h2 data-split>Do primeiro café à chave na mão.</h2>
+  <ol class="etapas" data-stagger>
+    <li><span class="etapa__n">1</span><h3>Escuta</h3><p>Visita ao terreno e uma conversa longa com a família sobre a rotina de verdade.</p></li>
+    <li><span class="etapa__n">2</span><h3>Estudo de luz</h3><p>Maquete e simulação do sol em cada hora do dia, antes de fechar uma parede.</p></li>
+    <li><span class="etapa__n">3</span><h3>Projeto completo</h3><p>Arquitetura, interiores e iluminação desenhados juntos, num só caderno.</p></li>
+    <li><span class="etapa__n">4</span><h3>Obra acompanhada</h3><p>Visitas frequentes até a entrega, para o desenho virar casa sem surpresa.</p></li>
+  </ol>
+</section>
+
+<section class="contato" id="contato">
+  <div class="contato__in" data-reveal>
+    <h2>Vamos desenhar a tua casa?</h2>
+    <div class="contato__cartao">
+      <p class="contato__estado"><span class="pulso" aria-hidden="true"></span>Agenda aberta para novos projetos</p>
+      <div class="contato__acoes">
+        <button class="btn btn--luz" type="button" data-abrir-conversa>Agendar conversa <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+        <button class="btn btn--vidro" type="button" data-whats><svg class="ic"><use href="#i-whatsapp-logo"/></svg> WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="rodape">
+  <p class="marca marca--rodape"><img class="marca__logo" src="img/arcane.svg" alt="Arcane" width="152" height="30">arquitetura</p>
+  <p class="rodape__aviso">A Casa Entardecer é um projeto conceitual criado pela <a href="https://arcanestudios.io">Arcane Studios</a> para demonstração; imagens geradas por IA.</p>
+</footer>
+
+<dialog class="conversa" id="conversa" aria-labelledby="conversa-t">
+  <form class="conversa__in" method="dialog" novalidate>
+    <button class="conversa__x" type="button" data-fechar aria-label="Fechar"><svg class="ic"><use href="#i-x"/></svg></button>
+    <h2 id="conversa-t">Agendar uma conversa</h2>
+    <p class="conversa__sub">Conta um pouco do projeto. A gente responde em até um dia útil.</p>
+    <label class="campo"><span>Nome</span><input name="nome" autocomplete="name" required></label>
+    <label class="campo"><span>WhatsApp</span><input name="tel" type="tel" inputmode="tel" autocomplete="tel" required></label>
+    <label class="campo"><span>Tipo de projeto</span><select name="tipo"><option>Casa nova</option><option>Reforma</option><option>Interiores</option><option>Ainda não sei</option></select></label>
+    <label class="campo"><span>Sobre o projeto <i>(opcional)</i></span><textarea name="sobre-projeto" rows="3" autocomplete="off"></textarea></label>
+    <p class="campo__erro" role="alert" hidden>Preenche nome e WhatsApp para a gente te chamar.</p>
+    <button class="btn btn--luz" type="submit" value="enviar">Enviar</button>
+  </form>
+</dialog>
+
+<script src="js/arcane-ui.js?v=2" defer></script>
+<script src="js/casa.js?v=2" defer></script>
+</body>
+</html>
