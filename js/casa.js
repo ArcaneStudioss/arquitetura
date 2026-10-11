@@ -30,7 +30,7 @@
     { n: 'Terraço', img: '06-terraco', fx: .58, T: [.6, .5], fire: 1, hot: [
       { u: .53, v: .65, d: .6, t: 'Fogo de chão', x: 'O ponto de encontro das noites, em travertino como o resto da casa.' }] }
   ];
-  const N = ROOMS.length, UMAX = N - 0.4, DW = .62, Z0 = 1.08, IA = 1536 / 864;
+  const N = ROOMS.length, UMAX = N - 0.4, DW = .46, Z0 = 1.08, IA = 1536 / 864;
   const palco = tour.querySelector('.tour__palco'), canvas = tour.querySelector('.tour__tela');
   const hero = tour.querySelector('.tour__hero'), legendas = [...tour.querySelectorAll('.comodo')];
   const pontosEl = tour.querySelector('.tour__pontos'), cartao = tour.querySelector('.tour__cartao');
@@ -51,10 +51,10 @@
     const A = { i, z: Z0 + .1 * eo(cl(w / DW)), bob: 0 }, out = { A, B: null, m: 0, w, dip: 0 };
     if (w > DW && i < N - 1) {
       const q = (w - DW) / (1 - DW), e = eio(q);
-      A.z = Z0 + .1 + .9 * Math.pow(e, 1.35);
+      A.z = Z0 + .1 + .9 * Math.pow(e, 1.25);
       out.B = { i: i + 1, z: 1 + (Z0 - 1) * e };
-      out.m = ss(.38, .86, q);
-      out.dip = Math.sin(Math.PI * out.m) * .22;
+      out.m = ss(.28, .94, q);
+      out.dip = Math.sin(Math.PI * out.m) * .16;
       A.bob = out.B.bob = Math.sin(q * Math.PI * 4) * Math.sin(q * Math.PI) * .0035;
     }
     return out;
@@ -233,7 +233,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
   }
   function animarPara(i) {
     i = cl(i, 0, N - 1); if (i === alvoPag && !anim) return;
-    const de = u, para = i, dur = Math.abs(para - de) > 1.5 ? 1.2 : (para > de ? 1.9 : 1.3), t0 = performance.now();
+    const de = u, para = i, dur = Math.abs(para - de) > 1.5 ? 2.2 : (para > de ? 3.2 : 2.4), t0 = performance.now();
     alvoPag = i; pedir(i); pedir(i + 1);
     anim = { de, para, dur, t0 };
   }
@@ -260,7 +260,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     if (!gravar) { if (!visivel || d.hidden) { rodando = false; return; } requestAnimationFrame(quadro); }
     const t = agora / 1000;
     if (gravar) { u = window.__u || 0; parAlvo = window.__par || [0, 0]; par = parAlvo; sujo = true; }
-    else if (modoScroll) { uAlvo = progressoScroll(); u = Math.abs(uAlvo - u) < .0005 ? uAlvo : lerp(u, uAlvo, .14); }
+    else if (modoScroll) { uAlvo = progressoScroll(); u = Math.abs(uAlvo - u) < .0005 ? uAlvo : lerp(u, uAlvo, .085); }
     else if (anim) {
       const q = cl((agora - anim.t0) / (anim.dur * 1000)); u = lerp(anim.de, anim.para, eio(q));
       if (q >= 1) { anim = null; u = alvoPag; dwellIni = agora; }
@@ -280,7 +280,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     hero.style.opacity = h0; hero.style.transform = `translateY(${(1 - h0) * -24}px)`; hero.style.visibility = h0 < .02 ? 'hidden' : 'visible';
     const ativo = cam.B && cam.m > .5 ? cam.B.i : i, wl = cam.B && cam.m > .5 ? 0 : w;
     legendas.forEach((li, k) => {
-      const on = k === ativo && (k === 0 ? wl > .3 : true) && (wl < .72 || k === N - 1) && !(cam.B && cam.m > .15 && cam.m < .85);
+      const on = k === ativo && (k === 0 ? wl > .3 : true) && (wl < .62 || k === N - 1) && !(cam.B && cam.m > .15 && cam.m < .85);
       li.classList.toggle('is-on', on);
     });
     const perto = Math.round(cl(u, 0, N - 1));

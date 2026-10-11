@@ -174,7 +174,7 @@ section{scroll-margin-top:64px}
   .tour__trilho{justify-content:center;bottom:28px}
   .tour.is-scroll .tour__seta{display:none}
   /* PC com mouse: passeio comandado pela rolagem (palco fixo) */
-  .tour.is-scroll{height:450vh}
+  .tour.is-scroll{height:720vh}
   .tour.is-scroll .tour__palco{position:sticky;top:0;height:100vh;height:100lvh}
   .atelie{display:grid;grid-template-columns:5fr 7fr;gap:64px;align-items:start;padding:160px var(--pad)}
   .atelie__texto{position:sticky;top:140px}
