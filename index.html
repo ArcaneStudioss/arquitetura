@@ -14,7 +14,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="img/01-fachada-960.webp" imagesrcset="img/01-fachada-960.webp 960w, img/01-fachada.webp 1536w" imagesizes="100vw" fetchpriority="high">
-<link rel="stylesheet" href="css/site.css?v=2">
+<link rel="stylesheet" href="css/site.css?v=4">
 <link rel="stylesheet" href="css/arcane-ui.css?v=2">
 <link rel="stylesheet" href="css/arcane-motion.css?v=2">
 </head>
@@ -124,16 +124,20 @@
     <button class="conversa__x" type="button" data-fechar aria-label="Fechar"><svg class="ic"><use href="#i-x"/></svg></button>
     <h2 id="conversa-t">Agendar uma conversa</h2>
     <p class="conversa__sub">Conta um pouco do projeto. A gente responde em até um dia útil.</p>
-    <label class="campo"><span>Nome</span><input name="nome" autocomplete="name" required></label>
-    <label class="campo"><span>WhatsApp</span><input name="tel" type="tel" inputmode="tel" autocomplete="tel" required></label>
-    <label class="campo"><span>Tipo de projeto</span><select name="tipo"><option>Casa nova</option><option>Reforma</option><option>Interiores</option><option>Ainda não sei</option></select></label>
+    <label class="campo"><span>Nome</span><input name="nome" autocomplete="name" autocapitalize="words" minlength="2" maxlength="80" required aria-describedby="e-nome"><small class="campo__msg" id="e-nome" role="alert" hidden>Diga seu nome para a gente saber com quem fala.</small></label>
+    <label class="campo"><span>WhatsApp</span><input name="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(51) 99999-9999" maxlength="16" required aria-describedby="e-tel"><small class="campo__msg" id="e-tel" role="alert" hidden>Confere o número: DDD + 8 ou 9 dígitos.</small></label>
+    <fieldset class="opcoes"><legend>Tipo de projeto</legend>
+      <label><input type="radio" name="tipo" value="Casa nova" checked><span>Casa nova</span></label>
+      <label><input type="radio" name="tipo" value="Reforma"><span>Reforma</span></label>
+      <label><input type="radio" name="tipo" value="Interiores"><span>Interiores</span></label>
+      <label><input type="radio" name="tipo" value="Ainda não sei"><span>Ainda não sei</span></label>
+    </fieldset>
     <label class="campo"><span>Sobre o projeto <i>(opcional)</i></span><textarea name="sobre-projeto" rows="3" autocomplete="off"></textarea></label>
-    <p class="campo__erro" role="alert" hidden>Preenche nome e WhatsApp para a gente te chamar.</p>
-    <button class="btn btn--luz" type="submit" value="enviar">Enviar</button>
+        <button class="btn btn--luz" type="submit" value="enviar">Enviar</button>
   </form>
 </dialog>
 
 <script src="js/arcane-ui.js?v=2" defer></script>
-<script src="js/casa.js?v=2" defer></script>
+<script src="js/casa.js?v=4" defer></script>
 </body>
 </html>

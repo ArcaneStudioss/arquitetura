@@ -12,7 +12,7 @@
   if (reduzir) return; // página comum: poster + lista de cômodos
 
   const ROOMS = [
-    { n: 'Fachada', img: '01-fachada', fx: .46, T: [.5, .6], hot: [
+    { n: 'Fachada', img: '01-fachada', fx: .46, fy: .4, T: [.5, .6], hot: [
       { u: .27, v: .36, d: .32, t: 'Brises de freijó', x: 'Filtram o sol da tarde e dão privacidade sem fechar a casa.' },
       { u: .74, v: .6, d: .4, t: 'Base em pedra', x: 'Travertino bruto ancorando os volumes de cal no terreno.' }] },
     { n: 'Entrada', img: '02-entrada', fx: .52, T: [.52, .44], hot: [
@@ -60,13 +60,13 @@
     return out;
   }
   // cobertura (object-fit: cover com ponto focal) em coordenadas de textura
-  function cobre(fx, sa) {
+  function cobre(fx, sa, fy = .5) {
     const sc = sa > IA ? [1, IA / sa] : [sa / IA, 1];
-    return { sc, c: [cl(fx, sc[0] / 2, 1 - sc[0] / 2), .5] };
+    return { sc, c: [cl(fx, sc[0] / 2, 1 - sc[0] / 2), cl(fy, sc[1] / 2, 1 - sc[1] / 2)] };
   }
   // ponto da foto (u,v,profundidade) -> posição na tela (0..1); mesma conta do shader, ao contrário
   function naTela(h, room, z, par, sa) {
-    const { sc, c } = cobre(room.fx, sa), T = room.T, k = 1 - 1 / z, kz = (z - 1) * .9;
+    const { sc, c } = cobre(room.fx, sa, room.fy), T = room.T, k = 1 - 1 / z, kz = (z - 1) * .9;
     const cc = [lerp(c[0], T[0], k), lerp(c[1], T[1], k)];
     const t1 = [h.u - (h.d - .4) * par[0], h.v - (h.d - .4) * par[1]];
     const f = 1 + kz * (h.d - .4);
@@ -92,7 +92,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
 
   let gl = null, prog, U = {}, ctx2d = null, titulo = null, texTitulo = null;
   try {
-    gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power', preserveDrawingBuffer: false });
+    gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'default', preserveDrawingBuffer: false });
   } catch (e) { gl = null; }
   if (gl) {
     const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
@@ -129,20 +129,27 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     return pedidos[i];
   }
 
+  // altura (0..1 da tela) da linha do telhado da fachada com a câmera parada no início (mesma conta do shader)
+  function topoTelhado(sa) {
+    const r = ROOMS[0], { sc, c } = cobre(r.fx, sa, r.fy), k = 1 - 1 / Z0, ccy = lerp(c[1], r.T[1], k);
+    return .5 + (ccy + (.262 - ccy) * Z0 - c[1]) / sc[1];
+  }
   // título gigante atrás da casa (só no WebGL: a profundidade esconde as letras atrás do telhado e das palmeiras)
   function desenharTitulo(W, H) {
     if (!gl) return;
     titulo = titulo || d.createElement('canvas');
-    const k = .5; titulo.width = Math.round(W * k); titulo.height = Math.round(H * k);
+    const k = .75; titulo.width = Math.round(W * k); titulo.height = Math.round(H * k);
     const g = titulo.getContext('2d'), w = titulo.width, h = titulo.height;
     g.clearRect(0, 0, w, h);
     const fonte = f => `600 ${f}px Geist, system-ui, sans-serif`;
-    let fs = Math.min(w * .15, h * .19);
+    // o telhado da fachada (foto 1, v≈.26 (borda do mapa de profundidade, que começa um pouco antes do telhado)) cai em alturas diferentes conforme o formato da janela: o letreiro fica logo acima dele
+    const dprT = W / Math.max(1, pw), yT = topoTelhado(W / H) * h, topoM = 76 * dprT * .75;
+    let fs = Math.min(w * .15, h * .19, Math.max(30 * dprT * .75, (yT - topoM) / .87));
     g.font = fonte(fs); if ('letterSpacing' in g) g.letterSpacing = `${-fs * .04}px`;
     const larg = g.measureText('Entardecer').width, max = w * (W > H ? .66 : .9);
     if (larg > max) { fs *= max / larg; g.font = fonte(fs); if ('letterSpacing' in g) g.letterSpacing = `${-fs * .04}px`; }
     g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillStyle = '#fff';
-    const y = h * (W > H ? .292 : .262);
+    const y = yT + fs * .02;
     g.fillText('Entardecer', w / 2, y);
     g.font = `500 ${Math.max(10, fs * .13)}px "Geist Mono", monospace`;
     if ('letterSpacing' in g) g.letterSpacing = `${fs * .03}px`;
@@ -155,9 +162,10 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     tour.classList.add('is-titulo-gl');
   }
 
-  let W = 0, H = 0, sujo = true;
+  let W = 0, H = 0, sujo = true, qual = 1, pw = 1, ph = 1; // qual: escala da resolução (cai sozinha se o quadro demorar)
   function medir() {
-    const r = palco.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, modoScroll ? 1.75 : 1.5);
+    const r = palco.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, modoScroll ? 1.5 : 1.25) * qual;
+    pw = r.width; ph = r.height;
     W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
     if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; if (gl) gl.viewport(0, 0, W, H); }
     d.fonts && d.fonts.ready.then(() => { desenharTitulo(W, H); sujo = true; });
@@ -170,7 +178,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     if (!rA) return false;
     if (gl) {
       const bind = (unit, tex) => { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, tex); };
-      const set = (suf, st) => { const r = ROOMS[st.i], cv = cobre(r.fx, sa); gl.uniform2fv(U['sc' + suf], cv.sc); gl.uniform2fv(U['c' + suf], cv.c); gl.uniform2fv(U['T' + suf], r.T); gl.uniform1f(U['z' + suf], st.z); gl.uniform1f(U['f' + suf], r.fire ? 1 : 0); };
+      const set = (suf, st) => { const r = ROOMS[st.i], cv = cobre(r.fx, sa, r.fy); gl.uniform2fv(U['sc' + suf], cv.sc); gl.uniform2fv(U['c' + suf], cv.c); gl.uniform2fv(U['T' + suf], r.T); gl.uniform1f(U['z' + suf], st.z); gl.uniform1f(U['f' + suf], r.fire ? 1 : 0); };
       bind(0, pront[rA.i].t); bind(1, pront[rA.i].d); set('A', rA);
       const temB = B && pront[B.i] && rA === A;
       if (temB) { bind(2, pront[B.i].t); bind(3, pront[B.i].d); set('B', B); } else { bind(2, vazio); bind(3, vazio); }
@@ -181,7 +189,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     } else {
       const pinta = (st, alpha) => {
-        const r = ROOMS[st.i], im = pront[st.i].im, { sc, c } = cobre(r.fx, sa), k = 1 - 1 / st.z;
+        const r = ROOMS[st.i], im = pront[st.i].im, { sc, c } = cobre(r.fx, sa, r.fy), k = 1 - 1 / st.z;
         const cc = [lerp(c[0], r.T[0], k), lerp(c[1], r.T[1], k)];
         const sw = sc[0] / st.z, sh = sc[1] / st.z;
         ctx2d.globalAlpha = alpha;
@@ -254,7 +262,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
   }
 
   // ---------- laço de quadros (só roda com o passeio na tela) ----------
-  let visivel = false, rodando = false, ultimo = 0;
+  let visivel = false, rodando = false, ultimo = 0, lento = 16, ruim = 0, bom = 0;
   const gravar = /[?&]gravar\b/.test(location.search); // modo de gravação de vídeo: quadro a quadro, controlado de fora
   function quadro(agora) {
     if (!gravar) { if (!visivel || d.hidden) { rodando = false; return; } requestAnimationFrame(quadro); }
@@ -273,18 +281,28 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     const fogo = ROOMS[i].fire || (cam.B && ROOMS[cam.B.i].fire);
     const mudou = sujo || Math.abs(u - (quadro.u ?? -1)) > 1e-5 || Math.abs(par[0] - (quadro.p ?? 0)) > 1e-5;
     if (!mudou && !(fogo && agora - ultimo > 40)) return;
-    quadro.u = u; quadro.p = par[0]; ultimo = agora; sujo = false;
+    quadro.u = u; quadro.p = par[0]; sujo = false;
+    { const dt = agora - ultimo; ultimo = agora;
+      if (dt > 0 && dt < 250 && (cam.B || Math.abs(u - (quadro.u0 ?? u)) > 1e-4)) {
+        lento = lento * .9 + dt * .1;
+        if (lento > 24 && qual > .5 && ++ruim > 12) { qual = Math.max(.5, qual - .12); ruim = 0; lento = 16; medir(); }
+        else if (lento < 15) { ruim = 0; if (qual < 1 && ++bom > 240) { qual = Math.min(1, qual + .08); bom = 0; medir(); } }
+      }
+      quadro.u0 = u; }
     if (desenhar(cam, par, t % 1000) && !tour.classList.contains('is-gl')) tour.classList.add('is-gl');
     // textos
     const h0 = i === 0 ? 1 - ss(.08, .3, w) : 0;
-    hero.style.opacity = h0; hero.style.transform = `translateY(${(1 - h0) * -24}px)`; hero.style.visibility = h0 < .02 ? 'hidden' : 'visible';
+    if (h0 !== quadro.h0) {
+      quadro.h0 = h0; hero.style.opacity = h0; hero.style.transform = `translateY(${(1 - h0) * -24}px)`; hero.style.visibility = h0 < .02 ? 'hidden' : 'visible';
+    }
     const ativo = cam.B && cam.m > .5 ? cam.B.i : i, wl = cam.B && cam.m > .5 ? 0 : w;
     legendas.forEach((li, k) => {
       const on = k === ativo && (k === 0 ? wl > .3 : true) && (wl < .62 || k === N - 1) && !(cam.B && cam.m > .15 && cam.m < .85);
       li.classList.toggle('is-on', on);
     });
     const perto = Math.round(cl(u, 0, N - 1));
-    botoes.forEach((b, k) => b.setAttribute('aria-current', k === (modoScroll ? perto : alvoPag) ? 'true' : 'false'));
+    const atual = modoScroll ? perto : alvoPag;
+    if (atual !== quadro.at) { quadro.at = atual; botoes.forEach((b, k) => b.setAttribute('aria-current', k === atual ? 'true' : 'false')); }
     btAnt.disabled = alvoPag <= 0; btProx.disabled = alvoPag >= N - 1;
     // pontos: só parado no cômodo (e fora do herói)
     const parado = !cam.B || cam.m === 0 ? (w < DW - .04 && (i > 0 || w > .3)) : false;
@@ -295,7 +313,7 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
         const [x, y] = naTela(h, r, cam.A.z, par, W / H);
         const dentro = x > .04 && x < .96 && y > .1 && y < .8;
         b.classList.toggle('is-on', dentro); b.tabIndex = dentro ? 0 : -1;
-        b.style.transform = `translate(${x * palco.clientWidth}px,${y * palco.clientHeight}px)`;
+        b.style.transform = `translate(${x * pw}px,${y * ph}px)`;
       });
     }
   }
@@ -315,10 +333,16 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
   // ---------- janela "Agendar conversa" (formulário só quando a pessoa pede) ----------
   function initConversa() {
     const dlg = d.getElementById('conversa'); if (!dlg) return;
-    const form = dlg.querySelector('form'), erro = dlg.querySelector('.campo__erro');
+    const form = dlg.querySelector('form');
     let origem = null;
+    const campos = { nome: form.nome, tel: form.tel };
+    const marca = (el, ruim) => { const c = el.closest('.campo'), m = c.querySelector('.campo__msg'); c.classList.toggle('is-erro', ruim); m.hidden = !ruim; el.setAttribute('aria-invalid', ruim ? 'true' : 'false'); };
+    const digitos = v => v.replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '');
+    const nomeOk = v => v.trim().replace(/[^\p{L}]/gu, '').length >= 2;
+    const telOk = v => { const n = digitos(v); return n.length === 10 || (n.length === 11 && n[2] === '9'); };
+    const limpa = () => Object.values(campos).forEach(el => marca(el, false));
     d.querySelectorAll('[data-abrir-conversa]').forEach(b => b.addEventListener('click', () => {
-      origem = b; erro.hidden = true;
+      origem = b; limpa();
       if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
       d.documentElement.style.overflow = 'hidden';
     }));
@@ -326,10 +350,19 @@ void main(){float da,db;vec2 a=cam(scA,cA,TA,zA,dA,da);vec3 c=fogo(texture2D(tA,
     dlg.addEventListener('close', () => { d.documentElement.style.overflow = ''; origem && origem.focus(); });
     dlg.querySelector('[data-fechar]').addEventListener('click', fechar);
     dlg.addEventListener('click', e => { if (e.target === dlg) fechar(); });
+    // máscara do WhatsApp: (51) 99999-9999
+    form.tel.addEventListener('input', () => {
+      const n = digitos(form.tel.value).slice(0, 11);
+      form.tel.value = n.length > 6 ? `(${n.slice(0, 2)}) ${n.slice(2, n.length - 4)}-${n.slice(-4)}` : n.length > 2 ? `(${n.slice(0, 2)}) ${n.slice(2)}` : n;
+      if (form.tel.closest('.campo').classList.contains('is-erro') && telOk(form.tel.value)) marca(form.tel, false);
+    });
+    form.nome.addEventListener('input', () => { if (form.nome.closest('.campo').classList.contains('is-erro') && nomeOk(form.nome.value)) marca(form.nome, false); });
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if (!form.nome.value.trim() || form.tel.value.replace(/\D/g, '').length < 10) { erro.hidden = false; return; }
-      fechar(); form.reset();
+      const rn = !nomeOk(form.nome.value), rt = !telOk(form.tel.value);
+      marca(form.nome, rn); marca(form.tel, rt);
+      if (rn || rt) { (rn ? form.nome : form.tel).focus(); return; }
+      fechar(); form.reset(); limpa();
       window.Arcane && Arcane.toast('Site de exemplo: aqui o pedido iria para o WhatsApp do ateliê.', { tipo: 'ok' });
     });
     d.querySelectorAll('[data-whats]').forEach(b => b.addEventListener('click', () =>
